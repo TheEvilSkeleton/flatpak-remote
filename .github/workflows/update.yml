@@ -1,0 +1,40 @@
+name: Update
+on:
+  schedule:
+    - cron: '0 * * * *'
+  workflow_dispatch:
+
+env:
+  MANIFEST_PATH: # Path to manifest
+  MAIN_BRANCH: main # main branch (change if needed)
+  REPO: # link to project repository (optional)
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/flathub/flatpak-external-data-checker
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        submodules: true
+
+    - name: Update manifest
+      continue-on-error: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.PAT }}
+      run: |
+        set -x
+        git clone -b ${MAIN_BRANCH} https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git ${MAIN_BRANCH}
+        cd ${MAIN_BRANCH}
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+        git config user.name "github-actions[bot]"
+        /app/flatpak-external-data-checker --update --commit-only ${MANIFEST_PATH}
+
+    - name: Push to branch
+      continue-on-error: true
+      run: |
+        set -x
+        cd main
+        git push origin HEAD:${MAIN_BRANCH}
