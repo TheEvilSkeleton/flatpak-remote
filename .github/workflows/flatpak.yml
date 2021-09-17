@@ -4,7 +4,7 @@ name: Flatpak
 on:
   push:
     branches:
-      - main # (change if needed)
+      - main
   workflow_dispatch:
 
 env:
@@ -14,7 +14,6 @@ env:
   IMAGE_TAG: # Tag of image
   FLATPAK_BUNDLE: # Name of bundle (excl. .flatpak)
   FLATPAK_BRANCH: # Flatpak branch
-  UPSTREAM_BRANCH: main # Upstream branch (change if needed)
   FLATPAK_BUILD_DIR: build-dir
   FLATPAK_BUILD_REPO: build-repo
 
@@ -98,7 +97,7 @@ jobs:
         path: ${{ env.FLATPAK_BUNDLE }}.flatpak
 
   publish-oci:
-    if: github.ref == 'refs/heads/${UPSTREAM_BRANCH}'
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     needs: build
 

@@ -6,7 +6,6 @@ on:
 
 env:
   MANIFEST_PATH: # Path to manifest
-  UPSTREAM_BRANCH: main # Upstream branch (change if needed)
   REPO: # link to project repository (optional)
 
 jobs:
@@ -26,8 +25,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.PAT }}
       run: |
         set -x
-        git clone -b ${UPSTREAM_BRANCH} https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git ${UPSTREAM_BRANCH}
-        cd ${UPSTREAM_BRANCH}
+        git clone -b main https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git main
+        cd main
         git config user.email "github-actions[bot]@users.noreply.github.com"
         git config user.name "github-actions[bot]"
         /app/flatpak-external-data-checker --update --commit-only ${MANIFEST_PATH}
@@ -36,5 +35,5 @@ jobs:
       continue-on-error: true
       run: |
         set -x
-        cd ${UPSTREAM_BRANCH}
-        git push origin HEAD:${UPSTREAM_BRANCH}
+        cd main
+        git push origin HEAD:main
