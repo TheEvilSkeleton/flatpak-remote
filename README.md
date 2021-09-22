@@ -45,3 +45,14 @@ Editing workflows may require repetition. There are a total of two workflows; th
 In the `env:` list, these are the variables that will need to be changed. The comments explain what they are/do. You can edit them accordingly.
 
 Once done, push the changes to the repository and it should start building.
+
+### Allow access to your container image
+
+Finally, in order to allow users the ability to download packages from your Flatpak repository you must allow everyone read access to your container image.   
+
+You accomplish this by doing the following:
+
+1. On GitHub, navigate to the main page of your user account.
+2. In the top right corner of GitHub, click your profile photo, then click `Your profile`. 
+3. On your profile page, in the top right, click `Packages`. 
+4. From here you could change the visibility of your container to allow everyone to read your container.
