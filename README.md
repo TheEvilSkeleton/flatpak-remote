@@ -10,6 +10,12 @@ flatpak-remote is a template for creating Flatpak remotes for single projects us
 - f-e-d-c support: [flatpak-external-data-checker](https://github.com/flathub/flatpak-external-data-checker/) (f-e-d-c) is integrated in the template. However, you will still have to manually [make changes](https://github.com/flathub/flatpak-external-data-checker/#changes-to-flatpak-manifests) to the manifest so it can automatically update dependencies and the project itself.
 - Extensible: since this is only a template, it can be extended to do a lot more things, like make [flatpak-builder-tools](https://github.com/flatpak/flatpak-builder-tools) automatically update itself, which is unsupported on Flathub.
 
+### What doesn't work
+
+At the moment, we've found two things that do not work:
+- `extra-data`, see [flatpak/flatpak#3790](https://github.com/flatpak/flatpak/issues/3790).
+- History log, running `flatpak remote-info --log $REMOTE $APP_ID` will give an error.
+
 ## Setting up
 
 As written previously, this setup is more complex than publishing on Flathub.
