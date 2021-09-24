@@ -55,3 +55,7 @@ You accomplish this by doing the following:
 2. In the top right corner of GitHub, click your profile photo, then click `Your profile`. 
 3. On your profile page, in the top right, click `Packages`. 
 4. From here you could change the visibility of your container to allow everyone to read your container.
+
+## Automatic checker update templates
+
+One of the benefits of using this instead of Flathub is auto-updating dependencies using [flatpak-builder-tools](https://github.com/flathub/flatpak-external-data-checker/) automatically.
