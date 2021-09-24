@@ -47,7 +47,7 @@ In the `env:` list, these are the variables that will need to be changed. The co
 Once done, push the changes to the repository and it should start building.
 
 ### Allowing access to your container image
-Finally, in order to allow users the ability to download packages from your Flatpak repository you must allow everyone read access to your container image.   
+Finally, in order to allow users the ability to download packages from your Flatpak repository you must allow everyone read access to your container image.
 
 You accomplish this by doing the following:
 
