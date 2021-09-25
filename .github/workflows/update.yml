@@ -6,7 +6,9 @@ on:
 
 env:
   MANIFEST_PATH: # Path to manifest
-  REPO: # link to project repository (optional)
+  # Update dependencies using flatpak-builder-tools (optional)
+  UPSTREAM_REPOSITORY: # Link to project repository
+  UPSTREAM_BRANCH: # Preferred branch of upstream repository
 
 jobs:
   update:

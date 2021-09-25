@@ -57,5 +57,22 @@ You accomplish this by doing the following:
 4. From here you could change the visibility of your container to allow everyone to read your container.
 
 ## Automatic checker update templates
+One of the benefits of using this instead of Flathub is auto-updating dependencies using [flatpak-builder-tools](https://github.com/flathub/flatpak-external-data-checker/) automatically. 
 
-One of the benefits of using this instead of Flathub is auto-updating dependencies using [flatpak-builder-tools](https://github.com/flathub/flatpak-external-data-checker/) automatically.
+### Rust/Cargo
+
+This will update `cargo-sources.json` hourly if needed. It will need to be placed between the "Update manifest" and "Push to branch" jobs inside the [update.yml](.github/workflows/update.yml) file.
+```yaml
+    - name: Update Rust dependencies
+      continue-on-error: true
+      run: |
+        set -x
+        apt-get install -y python3-aiohttp python3-toml
+        git clone -b ${UPSTREAM_BRANCH} ${UPSTREAM_REPOSITORY} upstream
+        cd upstream
+        git clone https://github.com/flatpak/flatpak-builder-tools.git flatpak-builder-tools
+        python3 flatpak-builder-tools/cargo/flatpak-cargo-generator.py Cargo.lock -o ../main/cargo-sources.json
+        cd ../main
+        git add cargo-sources.json
+        git commit -m "Update cargo-sources.json"
+```
