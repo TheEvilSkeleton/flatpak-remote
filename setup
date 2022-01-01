@@ -8,9 +8,8 @@ DATA=(	"app ID"
 	"upstream branch"
 )
 
+# Check how many lines the DATA array uses starting from 0
 DATA_NUM="$(printf "'%s'\n" "${DATA[@]}" | wc -l)" && DATA_NUM=$(( $DATA_NUM - 1 ))
-
-declare -A ENV
 
 NUM=0
 while [[ $NUM -le $DATA_NUM ]]; do
@@ -25,16 +24,20 @@ GITHUB_WORKFLOW_FILES=(
 "$GITHUB_WORKFLOW_DIR/flatpak.yml"
 "$GITHUB_WORKFLOW_DIR/update.yml"
 )
+GITHUB_WORKFLOW_FILES_NUM="$(printf "'%s'\n" "${GITHUB_WORKFLOW_FILES[@]}" | wc -l)" && GITHUB_WORKFLOW_FILES_NUM=$(( $GITHUB_WORKFLOW_FILES_NUM - 1 ))
 
-for i in "${DATA[@]}"; do
+NUM=0
+for i in $(eval echo "{0..$DATA_NUM}"); do
 	VALUE=(
-	"$(cat ${GITHUB_WORKFLOW_FILES[0]} | grep -i "$i: " | tr -s ' ' | cut -d ' ' -f2)"
-	"$(cat ${GITHUB_WORKFLOW_FILES[0]} | grep -i "$i: " | tr -s ' ' | cut -d ' ' -f3 | tr -d '#')"
+	"$(cat ${GITHUB_WORKFLOW_FILES[0]} | grep -i "${ENV[$i]}: " | tr -s ' ' | cut -d ' ' -f2)"
+	"$(cat ${GITHUB_WORKFLOW_FILES[0]} | grep -i "${ENV[$i]}: " | tr -s ' ' | cut -d ' ' -f3 | tr -d '#')"
 	"$(echo $(echo "# " && cat ${GITHUB_WORKFLOW_FILES[0]} | grep -i "$i: " | cut -d'#' -f2))"
 	)
 
-	echo "Enter the $i: "
+	echo "Enter the ${DATA[$i]}: "
 	read -r VALUE[3]
 
-	sed -i "s/${VALUE[0]} ${VALUE[1]} ${VALUE[2]}/${VALUE[0]} ${VALUE[3]} ${VALUE[2]}/" "${GITHUB_WORKFLOW_FILES[0]}"
+	for j in $(eval echo "{0..$GITHUB_WORKFLOW_FILES_NUM}"); do
+		sed -i "s/${VALUE[0]} ${VALUE[1]} ${VALUE[2]}/${VALUE[0]} ${VALUE[3]} ${VALUE[2]}/" "${GITHUB_WORKFLOW_FILES[$j]}"
+	done
 done
