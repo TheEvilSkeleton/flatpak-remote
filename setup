@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+
+DATA=(	"app ID"
+	"manifest path"
+	"release name"
+	"release branch"
+	"upstream repository"
+	"upstream branch"
+)
+
+DATA_NUM="$(printf "'%s'\n" "${DATA[@]}" | wc -l)" && DATA_NUM=$(( $DATA_NUM - 1 ))
+
+declare -A ENV
+
+NUM=0
+while [[ $NUM -le $DATA_NUM ]]; do
+	for i in "${DATA[@]}"; do
+		ENV[$NUM]="$(echo $i | tr '[:lower:]' '[:upper:]' | tr ' ' '_')"
+		(( NUM=$NUM + 1 ))
+	done
+done
+
+GITHUB_WORKFLOW_DIR="$(dirname "${BASH_SOURCE[0]}")/.github/workflows"
+GITHUB_WORKFLOW_FILES=(
+"$GITHUB_WORKFLOW_DIR/flatpak.yml"
+"$GITHUB_WORKFLOW_DIR/update.yml"
+)
+
+for i in "${DATA[@]}"; do
+	VALUE=(
+	"$(cat ${GITHUB_WORKFLOW_FILES[0]} | grep -i "$i: " | tr -s ' ' | cut -d ' ' -f2)"
+	"$(cat ${GITHUB_WORKFLOW_FILES[0]} | grep -i "$i: " | tr -s ' ' | cut -d ' ' -f3 | tr -d '#')"
+	"$(echo $(echo "# " && cat ${GITHUB_WORKFLOW_FILES[0]} | grep -i "$i: " | cut -d'#' -f2))"
+	)
+
+	echo "Enter the $i: "
+	read -r VALUE[3]
+
+	sed -i "s/${VALUE[0]} ${VALUE[1]} ${VALUE[2]}/${VALUE[0]} ${VALUE[3]} ${VALUE[2]}/" "${GITHUB_WORKFLOW_FILES[0]}"
+done
