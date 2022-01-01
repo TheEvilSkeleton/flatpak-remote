@@ -5,10 +5,10 @@ on:
   workflow_dispatch:
 
 env:
-  MANIFEST_PATH: # Path to manifest
+  MANIFEST_PATH: com.my.App.yaml # Path to manifest
   # Update dependencies using flatpak-builder-tools (optional)
-  UPSTREAM_REPOSITORY: # Link to project repository
-  UPSTREAM_BRANCH: # Preferred branch of upstream repository
+  UPSTREAM_REPOSITORY: my.app.com # Link to project repository
+  UPSTREAM_BRANCH: branch # Preferred branch of upstream repository
 
 jobs:
   update:

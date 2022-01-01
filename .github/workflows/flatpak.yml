@@ -8,12 +8,12 @@ on:
   workflow_dispatch:
 
 env:
-  APP_ID: # App ID (reverse-DNS)
-  MANIFEST_PATH: # Path to manifest
-  IMAGE_NAME: # Name of Docker image
-  IMAGE_TAG: # Tag of image
-  FLATPAK_BUNDLE: # Name of bundle (excl. .flatpak)
-  FLATPAK_BRANCH: # Flatpak branch
+  APP_ID: com.my.App # App ID (reverse-DNS)
+  MANIFEST_PATH: com.my.App.yaml # Path to manifest
+  IMAGE_NAME: app # Name of Docker image
+  IMAGE_TAG: branch # Tag of image
+  FLATPAK_BUNDLE: app # Name of bundle (excl. .flatpak)
+  FLATPAK_BRANCH: branch # Flatpak branch
   FLATPAK_BUILD_DIR: build-dir
   FLATPAK_BUILD_REPO: build-repo
 
