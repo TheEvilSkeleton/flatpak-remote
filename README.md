@@ -5,7 +5,7 @@ flatpak-remote is a template for creating Flatpak remotes for single projects us
 
 ## Features
 - Additional branches: this is useful for projects that do not comply with Flathub's guidelines, e.g. if your project has no tagged releases, icons, etc. Sometimes developers want more than two branches. Flathub only allows `stable` and `beta` branches, so a third branch in Flathub would be literally impossible unless Flathub lets us create additional branches. This project helps the developers who want to have a third branch, be it `nightly` or other, while keeping the same App ID.
-- f-e-d-c support: [flatpak-external-data-checker](https://github.com/flathub/flatpak-external-data-checker/) (f-e-d-c) is integrated in the template. However, you will still have to manually [make changes](https://github.com/flathub/flatpak-external-data-checker/#changes-to-flatpak-manifests) to the manifest so it can automatically update dependencies and the project itself.
+- f-e-d-c support: [flatpak-external-data-checker](https://github.com/flathub/flatpak-external-data-checker/) (f-e-d-c) can be used in the template. However, you will still have to manually [make changes](https://github.com/flathub/flatpak-external-data-checker/#changes-to-flatpak-manifests) to the manifest so it can automatically update dependencies and the project itself.
 - Extensible: since this is only a template, it can be extended to do a lot more things, like make [flatpak-builder-tools](https://github.com/flatpak/flatpak-builder-tools) automatically update itself, which is unsupported on Flathub.
 
 ### What doesn't work
@@ -17,8 +17,8 @@ At the moment, we've found two things that do not work:
 As written previously, this setup is more complex than publishing on Flathub.
 
 ### Requirements
-- Full access to the repository
-- Understanding with Flatpak (or not, if you want to learn)
+- Full access to the repository and probably organization too.
+- Understanding with Flatpak (or not, if you want to learn).
 
 ### Preparing
 Before starting, create a new personal access token (PAT). [Generate a new token](https://github.com/settings/tokens/new), and copy the token in a safe space. The token should start with `ghp`. **Do not share the token with anyone!**
@@ -40,7 +40,7 @@ If you want to use already existing manifest and dependencies in Flathub, you ca
 If you have to create a manifest, refer to the Flatpak [documentation](https://docs.flatpak.org/en/latest/index.html) or to the [Flatpak Building Guide (video)](https://www.youtube.com/watch?v=xnnJRP4t9gM).
 
 ### Editing workflows
-Editing workflows may require repetition. There are a total of two workflows; they are located in the `.github/workflows` directory. `flatpak.yml` is used to build and push Flatpak packages to the remote, and `update.yml` is used to update dependencies hourly, if it was properly set up.
+Editing workflows may require repetition. `flatpak.yml` is used to build and push Flatpak packages to the remote.
 
 In the `env:` list, these are the variables that will need to be changed. The comments explain what they are/do. You can edit them accordingly.
 
@@ -55,24 +55,3 @@ You accomplish this by doing the following:
 2. In the top right corner of GitHub, click your profile photo, then click `Your profile`. 
 3. On your profile page, in the top right, click `Packages`. 
 4. From here you could change the visibility of your container to allow everyone to read your container.
-
-## Automatic checker update templates
-One of the benefits of using this instead of Flathub is auto-updating dependencies using [flatpak-builder-tools](https://github.com/flathub/flatpak-external-data-checker/) automatically. 
-
-### Rust/Cargo
-
-This will update `cargo-sources.json` hourly if needed. It will need to be placed between the "Update manifest" and "Push to branch" jobs inside the [update.yml](.github/workflows/update.yml) file.
-```yaml
-    - name: Update Rust dependencies
-      continue-on-error: true
-      run: |
-        set -x
-        apt-get install -y python3-aiohttp python3-toml
-        git clone -b ${UPSTREAM_BRANCH} ${UPSTREAM_REPOSITORY} upstream
-        cd upstream
-        git clone https://github.com/flatpak/flatpak-builder-tools.git flatpak-builder-tools
-        python3 flatpak-builder-tools/cargo/flatpak-cargo-generator.py Cargo.lock -o ../main/cargo-sources.json
-        cd ../main
-        git add cargo-sources.json
-        git commit -m "Update cargo-sources.json"
-```

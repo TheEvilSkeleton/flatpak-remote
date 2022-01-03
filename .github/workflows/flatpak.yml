@@ -8,12 +8,12 @@ on:
   workflow_dispatch:
 
 env:
-  APP_ID: # App ID (reverse-DNS)
-  MANIFEST_PATH: # Path to manifest
-  IMAGE_NAME: # Name of Docker image
-  IMAGE_TAG: # Tag of image
-  FLATPAK_BUNDLE: # Name of bundle (excl. .flatpak)
-  FLATPAK_BRANCH: # Flatpak branch
+  APP_ID:
+  MANIFEST_PATH:
+  FLATPAK_BUNDLE:
+  FLATPAK_BRANCH:
+  DESTINATION_GITHUB_USERNAME:
+  DESTINATION_REPOSITORY_NAME:
   FLATPAK_BUILD_DIR: build-dir
   FLATPAK_BUILD_REPO: build-repo
 
@@ -138,21 +138,26 @@ jobs:
         skopeo login --username "${{ github.actor }}" --password-stdin ghcr.io <<<$GITHUB_TOKEN
         skopeo copy \
           oci:${FLATPAK_BUNDLE} \
-          docker://ghcr.io/${IMAGE_REPOSITORY}:$IMAGE_TAG
+          docker://ghcr.io/${IMAGE_REPOSITORY}:$FLATPAK_BRANCH
 
     - name: Update static index
       env:
         REGISTRY_AUTH_FILE: /tmp/auth.json
       run: |
         export IMAGE_REPOSITORY=$(echo $GITHUB_REPOSITORY | tr '[:upper:]' '[:lower:]')
+        export DOCKER="$(skopeo inspect docker://ghcr.io/$IMAGE_REPOSITORY:$FLATPAK_BRANCH | jq --arg github_repository "$GITHUB_REPOSITORY" '. as $img | { "Name": $github_repository, "Images": [$img] }')"
         set -e
-        git clone -b gh-pages https://${GITHUB_ACTOR}:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git gh-pages
-        skopeo inspect docker://ghcr.io/${IMAGE_REPOSITORY}:$IMAGE_TAG | \
-          jq '. as $img | { "Registry": "https://ghcr.io/", "Results": [ { "Name": "'${IMAGE_REPOSITORY}'", "Images": [$img] } ] }' \
-          > gh-pages/index/static
-        cd gh-pages
-        git config user.email "github-actions[bot]@users.noreply.github.com"
-        git config user.name "github-actions[bot]"
-        git add index/static
-        git commit -m "Update index for ${GITHUB_SHA:0:7}"
-        git push
+        git clone -b gh-pages https://github.com/$DESTINATION_GITHUB_USERNAME/$DESTINATION_REPOSITORY_NAME.git gh-pages
+        cat gh-pages/index/static | jq --argjson docker "$DOCKER" '.Results += [ $docker ]' > gh-pages/index/static
+
+    - name: Push to repository
+      uses: cpina/github-action-push-to-another-repository@main
+      env:
+        API_TOKEN_GITHUB: ${{ secrets.PAT }}
+      with:
+        source-directory: 'gh-pages'
+        destination-github-username: ${{ env.DESTINATION_GITHUB_USERNAME }}
+        destination-repository-name: ${{ env.DESTINATION_REPOSITORY_NAME }}
+        user-email: github-actions[bot]@users.noreply.github.com
+        commit-message: Update index
+        target-branch: gh-pages
